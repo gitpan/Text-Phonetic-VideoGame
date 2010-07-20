@@ -8,7 +8,7 @@ use Roman ();
 use Lingua::EN::Inflect::Number qw( to_S );
 use List::MoreUtils qw( uniq );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 my %ordinal = (
     '1st' => 'first',
     '2nd' => 'second',
@@ -23,21 +23,26 @@ my %ordinal = (
 my %abbreviation = (
     breathe => 'breath',   # NYSIIS handles this case poorly
     bros => 'brothers',
+    csi  => 'crime scene investigation',
     ddr  => 'dance dance revolution',
     doa  => 'dead or alive',
+    dora => 'dora the explorer',
     ff   => 'final fantasy',
     gta  => 'grand theft auto',
     iss  => 'international superstar soccer',
     kotr => 'knights of the old republic',
     le   => 'limited edition',
+    mlb  => 'major league baseball',
     motocross => 'motorcross',
     nam  => 'vietnam',
     ny   => 'new york',
     pgr  => 'project gotham racing',
+    spongebob => 'spongebob squarepants',
     t2   => 'terminator 2',
     tmnt => 'teenage mutant ninja turtles',
     wwf  => 'wwe',
     xtreme => 'extreme',
+    zelda => 'the legend of zelda',
 
     # easier than using a words to numbers module
     eighteen => 18,
@@ -51,6 +56,14 @@ my %abbreviation = (
     rtype     => 'r type',
     xmen      => 'x men',
 );
+my $publishers = join '|', (
+    'disney',
+    'disneys',
+    'ea',
+    'james camerons',
+    'sega',
+    'tom clancys',
+);
 
 sub _do_encode {
     my $self   = shift;
@@ -58,7 +71,10 @@ sub _do_encode {
     my $original = $string;
 
     $string =~ s{[-/:]}{ }g;     # dashes, slashes are like spaces
-    $string =~ s/[&.'"]//g;     # most punctuation can be ignored
+    $string =~ s/[&.'",]//g;     # most punctuation can be ignored
+
+    # remove useless publisher names (usually found at the front)
+    $string =~ s/^(?:$publishers)\b//;
 
     # expand some common abbreviations
     my $abbr = join '|', keys(%abbreviation);
@@ -70,8 +86,9 @@ sub _do_encode {
     $string =~ s/(\D)(\d)/$1 $2/g;  # "xbox360", "kombat4", etc
 
     # remove some noise words
-    $string =~ s/\b(n|a|an|the|and|of|vs|at|in|for|if)\b//g;
-    $string =~ s/\b(edition|volume|vol|game|games)\b//g;
+    $string =~ s/\b(videogame|video game|as)\b//g;
+    $string =~ s/\b(n|a|an|the|and|of|vs|at|in|for|if|game only)\b//g;
+    $string =~ s/\b(edition|volume|vol|game|games|used)\b//g;
 
     $string =~ s/\s+/ /g;
     $string =~ s/^\s+|\s+$//g; # remove leading/trailing spaces
@@ -80,6 +97,7 @@ sub _do_encode {
     my @words = map { $self->split_compound_word($_) } split / /, $string;
     for my $word (@words) {
         $word = $self->word2num($word);
+        next if $word eq 'mix';  # looks Roman but is rarely meant that way
         $word = Roman::arabic($word) if Roman::isroman($word);
     }
 
@@ -111,6 +129,8 @@ sub _do_encode {
         s/\bS\b//      if /\bRAN STANPY\b/;   # Show     <- Ren & Stimpy
         s/\bSPANG BAB\b// if /\bSGAR PAN\b/;  # Sponge Bob <- Square Pants
         s/\bRASC RANGAR\b// if /\bCAP DAL\b/; # Rescue Rangers <- Chip & Dale
+        s/\bLAR CRAFT\b//   if /\bTANB RADAR\b/; # Lara Croft  <- Tomb Raider
+        s/\bLAGAN\b//       if /\bLAGAN SPAR\b/; # Legend <- Legend of Spyro
     }
 
     $string =~ s/X\b/C/g;      # "TANX" -> "TANC" etc
@@ -264,6 +284,7 @@ my %dictionary = map { $_ => 1 } qw(
     boy
     brain
     brat
+    bread
     break
     brew
     buck
@@ -396,6 +417,7 @@ my %dictionary = map { $_ => 1 } qw(
     food
     fool
     foot
+    force
     fort
     fox
     francisco
@@ -555,6 +577,7 @@ my %dictionary = map { $_ => 1 } qw(
     navy
     night
     nine
+    ninja
     north
     nuke
     oak
@@ -776,6 +799,7 @@ my %dictionary = map { $_ => 1 } qw(
     year
     york
     zero
+    zone
     zoom
 );
 sub is_word {
