@@ -8,7 +8,7 @@ use Roman ();
 use Lingua::EN::Inflect::Number qw( to_S );
 use List::MoreUtils qw( uniq );
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 my %ordinal = (
     '1st' => 'first',
     '2nd' => 'second',
@@ -34,15 +34,20 @@ my %abbreviation = (
     le   => 'limited edition',
     mlb  => 'major league baseball',
     motocross => 'motorcross',
+    mr   => 'mister',
     nam  => 'vietnam',
     ny   => 'new york',
+    pbr  => 'pro bull riders',
     pgr  => 'project gotham racing',
     spongebob => 'spongebob squarepants',
+    spyro => 'legend spyro',
     t2   => 'terminator 2',
     tmnt => 'teenage mutant ninja turtles',
+    w => 'with',   # w/ before removing slashes becomes w
     wwf  => 'wwe',
     xtreme => 'extreme',
     zelda => 'the legend of zelda',
+
 
     # easier than using a words to numbers module
     eighteen => 18,
@@ -52,6 +57,7 @@ my %abbreviation = (
     davinci   => 'da vinci',
     fzero     => 'f zero',
     motogp    => 'moto gp',
+    mysims    => 'my sims',
     proam     => 'pro am',
     rtype     => 'r type',
     xmen      => 'x men',
@@ -63,6 +69,7 @@ my $publishers = join '|', (
     'james camerons',
     'sega',
     'tom clancys',
+    'mobile suit',  # not a publisher. commonly omitted "gundam" prefix
 );
 
 sub _do_encode {
@@ -80,15 +87,18 @@ sub _do_encode {
     my $abbr = join '|', keys(%abbreviation);
     $string =~ s/\b($abbr)\b/$abbreviation{$1}/ge;
 
+    $string =~ s/sk8/skate/g;
     $string =~ s/\b([1-9])(st|nd|rd|th)\b/$ordinal{"$1$2"}/ge;
     $string =~ s/\bv(\d)\b/volume $1/g;
+    $string =~ s/\b(\d+)gb\b/$1 gb/g;      # 40GB -> 40 GB
     $string =~ s/\b2k([0-9])\b/200$1/ig;   # 2K4 -> 2004
+    $string =~ s/\b(\d+)k\b/${1}000/g;       # 40K -> 40000
     $string =~ s/(\D)(\d)/$1 $2/g;  # "xbox360", "kombat4", etc
 
     # remove some noise words
-    $string =~ s/\b(videogame|video game|as)\b//g;
-    $string =~ s/\b(n|a|an|the|and|of|vs|at|in|for|if|game only)\b//g;
-    $string =~ s/\b(edition|volume|vol|game|games|used)\b//g;
+    $string =~ s/\b(videogame|video game|as|ds)\b//g;
+    $string =~ s/\b(n|a|an|the|and|of|vs|at|in|for|if|game only|with)\b//g;
+    $string =~ s/\b(edition|volume|vol|versus|game|games|used)\b//g;
 
     $string =~ s/\s+/ /g;
     $string =~ s/^\s+|\s+$//g; # remove leading/trailing spaces
@@ -130,7 +140,6 @@ sub _do_encode {
         s/\bSPANG BAB\b// if /\bSGAR PAN\b/;  # Sponge Bob <- Square Pants
         s/\bRASC RANGAR\b// if /\bCAP DAL\b/; # Rescue Rangers <- Chip & Dale
         s/\bLAR CRAFT\b//   if /\bTANB RADAR\b/; # Lara Croft  <- Tomb Raider
-        s/\bLAGAN\b//       if /\bLAGAN SPAR\b/; # Legend <- Legend of Spyro
     }
 
     $string =~ s/X\b/C/g;      # "TANX" -> "TANC" etc
@@ -361,6 +370,7 @@ my %dictionary = map { $_ => 1 } qw(
     dope
     dorm
     double
+    down
     drag
     dragon
     dream
@@ -386,6 +396,7 @@ my %dictionary = map { $_ => 1 } qw(
     elf
     elk
     elm
+    end
     epic
     ever
     excite
@@ -421,8 +432,10 @@ my %dictionary = map { $_ => 1 } qw(
     fort
     fox
     francisco
+    free
     front
     fuel
+    fun
     fury
     fuse
     game
@@ -433,6 +446,7 @@ my %dictionary = map { $_ => 1 } qw(
     gem
     gene
     germ
+    ghost
     gig
     girl
     glen
@@ -487,6 +501,7 @@ my %dictionary = map { $_ => 1 } qw(
     house
     howl
     hub
+    hunter
     hurt
     hymn
     ice
@@ -506,6 +521,7 @@ my %dictionary = map { $_ => 1 } qw(
     joke
     jot
     jug
+    jump
     junk
     kart
     keel
@@ -596,8 +612,10 @@ my %dictionary = map { $_ => 1 } qw(
     palm
     pant
     paper
+    parents
     park
     pawn
+    pay
     peer
     pilot
     ping
@@ -671,6 +689,7 @@ my %dictionary = map { $_ => 1 } qw(
     shift
     ship
     shock
+    shoot
     shore
     sick
     side
@@ -706,6 +725,7 @@ my %dictionary = map { $_ => 1 } qw(
     spy
     square
     star
+    start
     station
     steel
     stem
@@ -720,6 +740,7 @@ my %dictionary = map { $_ => 1 } qw(
     swim
     switch
     tail
+    take
     talk
     tall
     tank
@@ -790,6 +811,7 @@ my %dictionary = map { $_ => 1 } qw(
     wise
     wolf
     womb
+    wonder
     wood
     world
     worm
