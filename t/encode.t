@@ -2706,6 +2706,26 @@ my @tests = (
         q{Sherlock Holmes Versus Jack the Ripper},
     ],
     [
+        q{Hasbro Family Game Night 4: The Game Show},
+        q{Family Game Night 4: The Game Show},
+    ],
+    [
+        q{Rabbids Travel in Time},
+        q{Raving Rabbids: Travel in Time},
+    ],
+    [
+        q{Asphalt: 3D},
+        q{Asphalt},
+    ],
+    [
+        q{Nintendo 3DS Aqua Blue},
+        q{Aqua Blue Nintendo 3DS},
+    ],
+    [
+        q{Star Fox 64 3D},
+        q{Star Fox 64},
+    ],
+    [
         q{Playstation 3 system 40GB},
         q{Playstation 3 system 40 GB},
     ]

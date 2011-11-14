@@ -8,7 +8,7 @@ use Roman ();
 use Lingua::EN::Inflect::Number qw( to_S );
 use List::MoreUtils qw( uniq );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 my %ordinal = (
     '1st' => 'first',
     '2nd' => 'second',
@@ -39,6 +39,7 @@ my %abbreviation = (
     ny   => 'new york',
     pbr  => 'pro bull riders',
     pgr  => 'project gotham racing',
+    rabbids => 'raving rabbids',
     spongebob => 'spongebob squarepants',
     spyro => 'legend spyro',
     t2   => 'terminator 2',
@@ -66,6 +67,7 @@ my $publishers = join '|', (
     'disney',
     'disneys',
     'ea',
+    'hasbro',
     'james camerons',
     'sega',
     'tom clancys',
@@ -96,7 +98,7 @@ sub _do_encode {
     $string =~ s/(\D)(\d)/$1 $2/g;  # "xbox360", "kombat4", etc
 
     # remove some noise words
-    $string =~ s/\b(videogame|video game|as|ds)\b//g;
+    $string =~ s/\b(videogame|video game|as|ds|3d)\b//g;
     $string =~ s/\b(n|a|an|the|and|of|vs|at|in|for|if|game only|with)\b//g;
     $string =~ s/\b(edition|volume|vol|versus|game|games|used)\b//g;
 
